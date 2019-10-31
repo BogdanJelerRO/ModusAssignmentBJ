@@ -126,13 +126,14 @@ The app test was built using these technologies
 - [x] [Cucumber 4](https://cucumber.io)
 - [x] [Allure 2.x](http://allure.qatools.ru/)
 - [x] [Hamcrest 2.x](http://hamcrest.org/)
+- [x] [Google Truth](https://github.com/google/truth)
 - [x] [TestNg](https://testng.org/doc/)
 
 
 Each browser requires a "driver" . Chrome and GeckoDriver are here [resources](https://github.com/BogdanJelerRO/ModusAssignmentBJ/tree/exercise/e2e/bjexercise/src/test/resources/drivers)
 
 Run all tests on deployed app (example using on http://localhost:8000). For http://localhost:8000 the targetStage property can be omitted
-Examples
+
 
 **Browsers**
 
@@ -155,7 +156,7 @@ Want to run tests using a grid and in parallel?
 mvn clean test -Dbrowser=chrome -DgridURL=http://localhost:4444/wd/hub -Dthreads=4
 ```  
 
-#Reporting 
+**Reporting** 
 
 After running the tests, you can generate an Allure test report by simply running
 
