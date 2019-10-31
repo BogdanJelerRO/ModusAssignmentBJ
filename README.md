@@ -114,9 +114,57 @@ chrome.exe --user-data-dir=c:\temp --unsafely-treat-insecure-origin-as-secure=ht
 
 4.  Now you can observe network traffic in the Network tab or SW activity in Application > Service Workers in Developer Tools
 
-## End-To-End Tests
+## E2ETests
 
- TEST 
+Test automation solution is designed based on the TestPlan maintained,implemented and executed in the [TestPlan] (https://github.com/BogdanJelerRO/ModusAssignmentBJ/tree/exercise/e2e/bjexercise/testplan/TestPlan.xls)
+
+Target stage is http://localhost:8000 were app was deployed. However, the environment can be changed by providing the system property called "targetStage" to the command line when running the test suite
+
+The app test was built using these technologies
+
+
+- [x] [Java JDK 11] (https://jdk.java.net/11/)
+- [x] [Frameworkium 3] (https://github.com/Frameworkium/frameworkium-core)
+- [x] [Cucumber 4] (https://cucumber.io)
+- [x] [Allure 2.x] (http://allure.qatools.ru/)
+- [x] [Hamcrest 2.x] (http://hamcrest.org/)
+- [x] [TestNg] (https://testng.org/doc/)
+
+The app test is configurable in terms of browser compatibility (can run tests again Chrome, Firefox, SeleniumGrid etc) ; target stage(or environment) - any enviroment can be provided as shown in the examples below
+Each browser requires a "driver" ->  [resources] (https://github.com/BogdanJelerRO/ModusAssignmentBJ/tree/exercise/e2e/bjexercise/src/test/resources/drivers)
+
+Run all tests on deployed app (example using on http://localhost:8000). For http://localhost:8000 the targetStage property can be omitted
+Examples
+
+#Browsers
+
+- [x] [Chrome] 
+
+```js
+mvn clean test -DtargetStage="http://localhost:8000" -Dbrowser=chrome -Dwebdriver.chrome.driver = c:\path\to\chromedriver.exe
+``` 
+
+- [x] [Firefox] 
+
+```js
+mvn clean test -DtargetStage="http://localhost:8000" -Dwebdriver.gecko.driver = c:\path\to\geckodriver.exe
+```
+
+Want to run tests using a grid and in parallel? 
+
+
+```js
+mvn clean test -Dbrowser=chrome -DgridURL=http://localhost:4444/wd/hub -Dthreads=4
+```  
+
+#Reporting 
+
+After running the tests, you can generate an Allure test report by simply running
+
+
+```js
+mvn allure:report
+``` 
 
 ## Stack
 
