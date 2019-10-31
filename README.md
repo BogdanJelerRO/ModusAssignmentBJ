@@ -114,6 +114,10 @@ chrome.exe --user-data-dir=c:\temp --unsafely-treat-insecure-origin-as-secure=ht
 
 4.  Now you can observe network traffic in the Network tab or SW activity in Application > Service Workers in Developer Tools
 
+## End-To-End Tests
+
+ TEST 
+
 ## Stack
 
 The app was built using these aweseome technologies
