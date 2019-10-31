@@ -1,4 +1,4 @@
-package com.frameworkium.bdd;
+package com.budget.runner;
 
 import com.frameworkium.core.ui.UITestLifecycle;
 import com.frameworkium.core.ui.listeners.CaptureListener;
