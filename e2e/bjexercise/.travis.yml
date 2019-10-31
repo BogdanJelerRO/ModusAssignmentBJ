@@ -1,0 +1,62 @@
+language: java
+jdk:
+  - oraclejdk8
+  - openjdk11
+
+# docker, see: https://docs.travis-ci.com/user/reference/overview/
+sudo: false
+dist: trusty
+
+addons:
+  firefox: latest
+  chrome: stable
+
+install: true # disable default mvn install
+
+notifications:
+  slack:
+    secure: aCj8WPR6pXiNNPjWblGBNFm5gXvIBcsuJz5IQNK/DWl4KuGW1dRxDm10UCLxnel80cF5OBY3RxRQ2HQnTjCudk5MiPmcm7qurJygBrClBDWWHnloeFYSIazq0feZDN/Jpfbhlu3IUZrhFmqTyo6k5279wnG6CkOrbAx7jYOLyYV3kvSgsHgH0PQ63DA4ROHKS6wQX5On+y8s/cZGUmZj6e0f4kzm9r9UR+AZB2s8M7+0NkNHlU9z32cwER/ogBc1SnYimbv9sZP5pBVDEkKVjKBO9pOdOO+HdGVY1kD3HH4DiTUjEof2/PyboU3rDHJewRLbSY4izYosgtukqXFv/IRL4yWfVV+nEQzMrz0/qWqbrvukyulzx6fV7OV9ehyhbgBStgCNiWQWKoUmuAyqPxvnY0leZC7s0nCSyE7Ql0Z5TwZ13W6uW2san05c8zYKhJfmt5sysDacKe4nXk2H5uos/xUp5QJQLM1aMP4Ouz0sP2r0fRTtzbuL0qrdTTNxQmrfPdUYzAgNVVuWZUAeDWDO2LKlvN2dMowTnUM9kuV3VgFV6PM40TlXeBy9TggRYNRo56R1eVyQpG0X1t4qqH8Yyngwg3ySUr81vzBhWVbDNAdH38SxbRy9DQpUN07yyIvO3qUM4NU9ZNv3u3uqHdffdG9BtWNo/a9XhvU4cJs=
+
+cache:
+  directories:
+  - $HOME/.m2
+
+env:
+  global:
+  - CAPTURE_URL="http://capture-6c06138r.cloudapp.net"
+  - SUT_NAME="frameworkium-bdd"
+  - SUT_VERSION=${TRAVIS_BRANCH}
+  - THREAD_COUNT=2
+  - GECKO_VER=0.24.0
+  - CHROME_DRIVER_VER=77.0.3865.40
+  # Override Travis default to give browsers more room
+  - _JAVA_OPTIONS="-Xmx1024m -Xms128m"
+  # Required to turn on workaround for the following issue:
+  # https://github.com/travis-ci/travis-ci/issues/8836
+  - CHROME_NO_SANDBOX=true
+
+before_script:
+  # Download geckodriver
+  - wget --quiet https://github.com/mozilla/geckodriver/releases/download/v${GECKO_VER}/geckodriver-v${GECKO_VER}-linux64.tar.gz
+  - tar -xzf geckodriver-v${GECKO_VER}-linux64.tar.gz
+
+  # Download chromedriver
+  - wget --quiet http://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VER}/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip
+
+script:
+  # Download deps and compile
+  - mvn test-compile -B --show-version -DskipTests=true -Dmaven.javadoc.skip=true
+
+  # Firefox off the grid
+  - mvn verify -B -Dthreads=${THREAD_COUNT} -Dbrowser=firefox -DreuseBrowser -Dheadless -DcaptureURL=${CAPTURE_URL} -DsutName="${SUT_NAME}" -DsutVersion="${SUT_VERSION}" -Dwebdriver.firefox.logfile=/dev/null
+
+  # Chrome off the grid
+  - mvn verify -B -Dthreads=${THREAD_COUNT} -Dbrowser=chrome -DreuseBrowser -Dheadless -DcaptureURL=${CAPTURE_URL} -DsutName="${SUT_NAME}" -DsutVersion="${SUT_VERSION}"
+
+  # Query Jira for which test to run and then log results to Jira
+  # Disabled until we have a JIRA to use
+  # - mvn verify -B -Dthreads=${THREAD_COUNT} -Dbrowser=chrome -DjiraURL="http://52.29.130.45:8080" -DjqlQuery="issueKey=TEST-1" -DresultVersion="BUILD TEST VERSION" -DzapiCycleRegex="Test Cycle" -DjiraUsername=frameworkium -DjiraPassword=frameworkium -DcaptureURL=${CAPTURE_URL} -DsutName="${SUT_NAME}" -DsutVersion="${SUT_VERSION}"
+
+  # Allure report
+  - mvn allure:report -B
